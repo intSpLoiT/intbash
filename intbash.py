@@ -26,7 +26,8 @@ ___ _   _ _____ ___ _  __    _    __  __ ____  _ _ ____
 |___|_| \\_| |_| |___|_|\\_\\/_/   \\_\\_|  |_|_____|_| |____/
 """
     current_directory = os.getcwd()
-    prompt = f"┌──(intikam21-cyber@root[{current_directory}]└─$ "
+    prompt = f"┌──(intikam21-cyber@root[{current_directory}]
+  └─$ "
     print(banner_art)
     user_text = input(prompt)
     os.system(f"echo {user_text} | figlet | lolcat")
