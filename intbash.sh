@@ -20,7 +20,7 @@ EOT
 chmod +x ~/.termux/termux-startup.sh
 
 # Termux başlangıç komutunu ayarla
-if ! grep -Fxq "source ~/.termux/termux-startup.sh" ~/.bash_profile
+if ! grep -Fxq "source ~/.termux/termux-startup.sh" ~/.bashrc
 then
     echo "source ~/.termux/termux-startup.sh" >> ~/.bash_profile
 fi
