@@ -1,58 +1,26 @@
 #!/bin/bash
-# Bu betik Termux başlatıldığında çalışır.
 
-# ASCII sanatınızın yer alacağı kutuyu oluşturun.
-echo "#############################################"
-echo "#                                           #"
-echo "#  ⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣴⠶⠾⠿⠛⠛⠻⠿⠶⣶⣤⣀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢠⣾⠟⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠻⣷⣄⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⢠⡿⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣆⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⣿⠇⡤⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⡈⣿⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⣿⡆⣷⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⠁⣿⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠸⣧⢸⡆⢀⣀⣀⣤⡀⠀⠀⢀⣤⣀⣀⡀⠀⡟⣸⡟⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠹⣿⠁⣿⣿⣿⣿⡟⠀⠀⠸⣿⣿⣿⣿⠆⣿⠟⠀⠀⠀⣀⠀
-⠀⢰⡟⢿⣆⠀⠀⣿⠀⠙⢿⣿⠟⠀⣠⣄⠀⠹⣿⣿⠟⠀⢹⠀⠀⣠⡿⢻⠀
-⣠⡾⠃⠈⠻⢷⣦⣽⣄⡀⠀⠀⠀⢸⣿⣿⣧⠀⠀⠀⢀⣠⣿⣤⡶⠟⠁⠘⢿⣆
-⠻⠷⠶⠶⣶⣤⣈⠙⠻⣿⣷⣦⠀⠸⠋⠙⠟⠀⣠⣾⣿⠟⠋⣁⣠⣴⠶⠶⠟
-⠀⠀⠀⠀⠀⠉⠛⠿⣶⣼⠿⣿⣲⡤⡤⡤⢤⢰⣿⡏⣿⣶⠿⠛⠉⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢀⣠⣴⣿⡄⠻⣹⡟⡟⡟⣻⣻⠽⠁⣿⣦⣄⡀⠀⠀⠀⠀⠀
-⠀⠀⣶⠾⠶⠾⠟⠋⣁⣼⣷⡀⠀⠉⠉⠉⠉⠀⢀⣼⣧⣀⠉⠛⠷⠶⠿⣶⠀
-⠀⠀⠙⣷⡄⢀⣴⠿⠛⠁⠀⠙⠳⠶⠤⠴⠶⠞⠋⠀⠈⠙⠻⣶⡄⠀⣾⠟⠀
-⠀⠀⠀⢸⣷⡿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢿⣶⡿⠀⠀⠀
------------------------------------------------------------
+# Gerekli paketleri yükle
+pkg update
+pkg install -y figlet
+pkg install -y ruby
+pkg install -y git
+gem install lolcat
 
-___ _   _ _____ ___ _  __    _    __  __ ____  _ _ ____
-|_ _| \ | |_   _|_ _| |/ /   / \  |  \/  |___ \/ ( ) ___|
- | ||  \| | | |  | || ' /   / _ \ | |\/| | __) | |/\___ \
- | || |\  | | |  | || . \  / ___ \| |  | |/ __/| |  ___) |
-|___|_| \_| |_| |___|_|\_\/_/   \_\_|  |_|_____|_| |____/
- #"
-echo "#                                           #"
-echo "#############################################"
+# ~/.termux/ dizinini oluştur
+mkdir -p ~/.termux
 
-# Özel input satırınızı ekleyin.
-PS1='┌──(intikam21-cyber@root\[\\w\])\n└─$ '
+# Termux başlangıç scriptini oluştur
+cat <<EOT > ~/.termux/termux-startup.sh
+#!/bin/bash
+python ~/termux-banner/intbash.py
+EOT
 
-# Kullanıcıdan bir girdi bekleyin.
-read -p "$PS1" input
+# Termux başlangıç scriptini çalıştırılabilir yap
+chmod +x ~/.termux/termux-startup.sh
 
-# Kullanıcının girdisini kontrol edin.
-if [[ $input == "intconsole" ]]; then
-    # İntframework dizinine geçiş yapın.
-    cd İntframework
-
-    # intconsoleV2.py dosyasını çalıştırın.
-    if [[ -f "intconsoleV2.py" ]]; then
-        python3 intconsoleV2.py
-    else
-        # Dosya mevcut değilse, GitHub deposundan indirin.
-        echo "intconsoleV2.py bulunamadı. GitHub deposundan indiriliyor..."
-        git clone https://github.com/Intikam21kurucu/intframework
-        cd intframework
-        python3 intconsoleV2.py
-    fi
-else
-    # Diğer komutlar için genel bir işlem yapın.
-    # Örneğin, kullanıcının girdiği komutu terminalde çalıştırın.
-    eval $input
+# Termux başlangıç komutunu ayarla
+if ! grep -Fxq "source ~/.termux/termux-startup.sh" ~/.bash_profile
+then
+    echo "source ~/.termux/termux-startup.sh" >> ~/.bash_profile
 fi
