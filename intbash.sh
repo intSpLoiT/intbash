@@ -13,7 +13,7 @@ mkdir -p ~/.termux
 # Termux başlangıç scriptini oluştur
 cat <<EOT > ~/.termux/termux-startup.sh
 #!/bin/bash
-python ~/termux-banner/intbash.py
+python ~/intbash/intbash.py
 EOT
 
 # Termux başlangıç scriptini çalıştırılabilir yap
