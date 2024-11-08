@@ -1,26 +1,16 @@
-#!/bin/bash
+pip3 install requests
 
-# Gerekli paketleri yükle
-pkg update
-pkg install -y figlet
-pkg install -y ruby
-pkg install -y git
-gem install lolcat
+chmod +x intconsole
+mv intconsole $PREFIX/bin/intconsole
+chmod +x help
+mv help $PREFIX/bin/help
+chmod +x oip
+mv oip $PREFIX/bin/oip
+chmod +x intmap
+mv intmap $PREFIX/bin/intmap
+chmod +x intweb
+mv intweb $PREFIX/bin/intweb
 
-# ~/.termux/ dizinini oluştur
-mkdir -p ~/.termux
+pkg install neofetch
 
-# Termux başlangıç scriptini oluştur
-cat <<EOT > ~/.termux/termux-startup.sh
-#!/bin/bash
-python ~/intbash/intbash.py
-EOT
-
-# Termux başlangıç scriptini çalıştırılabilir yap
-chmod +x ~/.termux/termux-startup.sh
-
-# Termux başlangıç komutunu ayarla
-if ! grep -Fxq "source ~/.termux/termux-startup.sh" ~/.bashrc
-then
-    echo "source ~/.termux/termux-startup.sh" >> ~/.bashrc
-fi
+python3 intbash.py
