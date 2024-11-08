@@ -45,4 +45,5 @@ if [[ "$answer" == "y" || "$answer" == "Y" ]]; then
     python3 intbash.py
 else
     echo "IntFramework installation skipped."
+cd ~
 fi
