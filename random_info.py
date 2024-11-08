@@ -8,8 +8,8 @@ BASE_URL = "https://api.shodan.io"
 # Generate random IP range (from 1 to 9)
 def random_ip_in_range():
     # Randomly select a range from 1 to 9
-    start_first = random.randint(1, 9)
-    end_first = random.randint(start_first, 9)
+    start_first = random.randint(1, 99)
+    end_first = random.randint(start_first, 99)
 
     start_second = random.randint(0, 255)
     end_second = random.randint(0, 255)
