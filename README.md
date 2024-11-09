@@ -20,4 +20,4 @@ python intbash.py
 # Credits
 --~~--
 
-[![OP-BANNER](https://github.com/U7P4L-IN/OP-BANNER.git)](https://github.com/U7P4L-IN/OP-BANNER.git)
+[OP-BANNER GitHub Repository](https://github.com/U7P4L-IN/OP-BANNER.git)
