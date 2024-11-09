@@ -14,6 +14,9 @@ chmod +x intmap
 mv intmap $PREFIX/bin/intmap
 chmod +x intweb
 mv intweb $PREFIX/bin/intweb
+chmod +x intbrute
+mv intbrute $PREFIX/bin/intbrute
+chmod +x 
 
 # Install neofetch
 pkg install neofetch
