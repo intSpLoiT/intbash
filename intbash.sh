@@ -22,6 +22,7 @@ chmod +x intdiscord
 mv intdiscord $PREFIX/bin/intdiscord
 chmod +x intpygen
 mv intpygen $PREFIX/bin/intpygen
+chmod +x 
 
 # Install neofetch
 pkg install neofetch
