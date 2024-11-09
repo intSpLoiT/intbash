@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import socket
 import argparse
 import requests
@@ -56,6 +55,7 @@ def vulnerability_scan(target_url):
             print('XSS açığı bulunamadı.')
     except requests.exceptions.RequestException as e:
         print(f'Hata: {e}')
+
 def brute_force_ssh(host, username, password_list):
     for password in password_list:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -97,37 +97,43 @@ def banner_grab(target_host, target_port):
         sock.close()
     except socket.error as e:
         print(f'Hata: {e}')
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='intweb', prog='intweb', formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('target', help='Hedef IP veya URL', )
-    parser.add_argument("-v", "--vulnerability-scanner", help='Vulnerability scan')
-    parser.add_argument("-s", "--sql-injection", help='Sql injection Scan')
-    parser.add_argument('-u', '--username', help='target mail for bruteforce')
-    parser.add_argument("-ps", '--password-list', help='password list for bruteforce')
-    parser.add_argument("-b", '--bruteforce-ssh', help='Bruteforce')
-    parser.add_argument('--dirscan', action='store_true', help='Dir scanning')
+    parser.add_argument("-v", "--vulnerability-scanner", help='Vulnerability scan', action='store_true')
+    parser.add_argument("-s", "--sql-injection", help='SQL injection Scan', action='store_true')
+    parser.add_argument('-u', '--username', help='Target username for bruteforce')
+    parser.add_argument("-ps", '--password-list', help='Password list for bruteforce', nargs='+')
+    parser.add_argument("-b", '--bruteforce-ssh', help='Bruteforce SSH', action='store_true')
+    parser.add_argument('--dirscan', action='store_true', help='Directory scanning')
     parser.add_argument('--banner', action='store_true', help='Banner Grabbing')
-    parser.add_argument('-d', '--dir', help='dir for dirscan')
-    parser.add_argument('-p', '--ports', nargs='+', type=int, default=[80, 443], 
-                        help='Taranacak port numaraları (varsayılan: 80, 443)')
-
+    parser.add_argument('-d', '--dir', help='Directory list for dirscan', nargs='+')
+    parser.add_argument('-p', '--ports', nargs='+', type=int, default=[80, 443], help='Taranacak port numaraları (varsayılan: 80, 443)')
+    
     args = parser.parse_args()
     target = args.target
     ports = args.ports
-    passw = args.password-list
+    passw = args.password_list
     us = args.username
     dir = args.dir
     open_ports = port_scan(target, ports)
+    
     if open_ports:
         # HTTP başlığı taraması sadece ilk açık port için yapılıyor
         http_header_scan(f'http://{target}:{open_ports[0]}')
-    if args.vulnerability-scanner:
-            vulnerability_scan('http://{target}')
-    if args.sql-injection:
-            sql_injection_scan('http://{target}')
-    if args.bruteforce-ssh:
-            brute_force_ssh('http://{target}', us, passw)
+    
+    if args.vulnerability_scanner:
+        vulnerability_scan(f'http://{target}')
+    
+    if args.sql_injection:
+        sql_injection_scan(f'http://{target}')
+    
+    if args.bruteforce_ssh:
+        brute_force_ssh(target, us, passw)
+    
     if args.dirscan:
-            dirscan('http://{target}', dir)
+        dir_scan(f'http://{target}', dir)
+    
     if args.banner:
-            banner_grab('http://{target}', ports)
+        banner_grab(target, ports[0])
