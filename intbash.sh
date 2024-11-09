@@ -26,6 +26,8 @@ chmod +x intdork
 mv intdork $PREFIX/bin/intdork
 chmod +x usersearchint
 mv usersearchint $PREFIX/bin/usersearchint
+chmod +x intninja
+mv intninja $PREFIX/bin/intninja
 
 # Install neofetch
 pkg install neofetch
