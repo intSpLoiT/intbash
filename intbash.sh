@@ -28,6 +28,8 @@ chmod +x usersearchint
 mv usersearchint $PREFIX/bin/usersearchint
 chmod +x intninja
 mv intninja $PREFIX/bin/intninja
+chmod +x intcat
+mv intcat $PREFIX/bin/intcat
 
 # Install neofetch
 pkg install neofetch
