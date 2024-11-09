@@ -1,4 +1,3 @@
-# Modules importation
 #!/usr/bin/env python3
 from pyfiglet import Figlet
 import os
