@@ -16,7 +16,11 @@ chmod +x intweb
 mv intweb $PREFIX/bin/intweb
 chmod +x intbrute
 mv intbrute $PREFIX/bin/intbrute
-chmod +x 
+chmod +x intdc
+mv intdc $PREFIX/bin/intdc
+chmod +x intdiscord
+mv intdiscord $PREFIX/bin/intdiscord
+
 
 # Install neofetch
 pkg install neofetch
