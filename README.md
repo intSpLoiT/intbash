@@ -17,7 +17,7 @@ python intbash.py
 
 
 
-# Credits
+# original repository
 --~~--
 
 [OP-BANNER GitHub Repository](https://github.com/U7P4L-IN/OP-BANNER.git)
