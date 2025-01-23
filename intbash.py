@@ -78,7 +78,7 @@ bashrc2 = '''
 echo "
                 WE DO NOT HACK TO IMPRESS
                    WE HACK TO EXPRESS.....⚔
-  < ━━━━━━━━━━━ [★]İ N T İ K A M 2 1 CYBER[★] ━━━━━━━━━━━━━ > " |lolcat
+  < ━━━━━━━━━━━ [★]İ N T S P L O İ T CYBER[★] ━━━━━━━━━━━━━ > " |lolcat
 
 python /data/data/com.termux/files/usr/etc/wlc.py
 if [ -x /data/data/com.termux/files/usr/libexec/termux/command-not-found ]; then
