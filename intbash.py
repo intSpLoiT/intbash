@@ -19,7 +19,7 @@ print('')
 os.system('clear')
 name = input('\n\n\n\n\t\033[1;32m Input Your  Name :')
 if not name:
-	name = "intikam21"
+	name = "intSpLoiT"
 wlc = '''
 import os,sys,time,random
 print("")
