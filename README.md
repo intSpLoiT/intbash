@@ -7,7 +7,7 @@
 
 # İnstall
 ````
-git clone https://github.com/Intikam21kurucu/intbash
+git clone https://github.com/intSpLoiT/intbash
 cd intbash
 chmod +x intbash.sh
 chmod +x intbash.py
