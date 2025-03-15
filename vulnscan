@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+import argparse
+import asyncio
+import socket
+import requests
+import json
+import time
+
+DEFAULT_PORTS = [
+    21, 22, 23, 25, 53, 80, 110, 135, 139, 143, 443, 445, 465, 587, 993, 995,
+    1080, 1433, 1521, 1723, 3306, 3389, 5000, 5432, 5900, 6379, 8080, 8443, 9200, 27017
+]
+
+COMMON_CREDENTIALS = [("admin", "admin"), ("root", "toor"), ("user", "password")]
+
+async def scan_port(target, port, timeout):
+    try:
+        reader, writer = await asyncio.open_connection(target, port)
+        writer.close()
+        await writer.wait_closed()
+        return port
+    except:
+        return None
+
+async def scan_ports(target, ports, timeout):
+    tasks = [scan_port(target, port, timeout) for port in ports]
+    results = await asyncio.gather(*tasks)
+    return [port for port in results if port is not None]
+
+def brute_force(target, port, protocol):
+    """ Brute-force saldırısı (SSH, FTP, MySQL, PostgreSQL) """
+    if protocol == "ssh":
+        for user, pwd in COMMON_CREDENTIALS:
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(3)
+                sock.connect((target, port))
+                sock.send(f"{user}\n".encode())
+                sock.send(f"{pwd}\n".encode())
+                response = sock.recv(1024).decode(errors="ignore")
+                sock.close()
+                if "Permission denied" not in response:
+                    return f"🔑 SSH Login Found! {user}:{pwd}"
+            except:
+                pass
+    elif protocol == "ftp":
+        import ftplib
+        for user, pwd in COMMON_CREDENTIALS:
+            try:
+                ftp = ftplib.FTP(target, timeout=3)
+                ftp.login(user, pwd)
+                ftp.quit()
+                return f"🔑 FTP Login Found! {user}:{pwd}"
+            except:
+                pass
+    return f"⚠ No {protocol.upper()} credentials found."
+
+def check_exploitdb(port):
+    """ Exploit-DB üzerinde port ile ilgili exploit var mı kontrol et """
+    exploitdb_url = f"https://www.exploit-db.com/search?cve={port}"
+    try:
+        response = requests.get(exploitdb_url, timeout=5)
+        if response.status_code == 200 and "No results" not in response.text:
+            return f"📌 Exploit-DB contains vulnerabilities: {exploitdb_url}"
+        else:
+            return "⚠ No known exploits in Exploit-DB."
+    except:
+        return "❌ Unable to access Exploit-DB API."
+
+async def vulnscan(target, ports, timeout, brute_services, exploit_db_only, output):
+    print(f"📡 Scanning {target} for open ports...")
+    open_ports = await scan_ports(target, ports, timeout)
+
+    if not open_ports:
+        print("✅ No open ports found.")
+        return
+
+    results = {"target": target, "ports": open_ports}
+
+    for port in open_ports:
+        print(f"\n🔎 Port {port} is **OPEN!** Checking for vulnerabilities...")
+        if not exploit_db_only:
+            for service in brute_services:
+                if service in ["ssh", "ftp"] and (port == 22 or port == 21):
+                    results[f"port_{port}_brute"] = brute_force(target, port, service)
+        results[f"port_{port}_exploit"] = check_exploitdb(port)
+
+    if output == "json":
+        with open(f"{target}_report.json", "w") as f:
+            json.dump(results, f, indent=4)
+        print(f"\n📁 Report saved as {target}_report.json")
+    elif output == "txt":
+        with open(f"{target}_report.txt", "w") as f:
+            f.write(json.dumps(results, indent=4))
+        print(f"\n📁 Report saved as {target}_report.txt")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Advanced vulnerability scanner.")
+    parser.add_argument("target", help="Target IP address or hostname")
+    parser.add_argument("-p", "--ports", nargs="+", type=int, default=DEFAULT_PORTS, help="Custom ports to scan")
+    parser.add_argument("--all-ports", action="store_true", help="Scan all 65535 ports")
+    parser.add_argument("--timeout", type=int, default=3, help="Set timeout for connections")
+    parser.add_argument("--speed", choices=["slow", "normal", "fast"], default="normal", help="Set scanning speed")
+    parser.add_argument("--brute", nargs="+", choices=["ssh", "ftp"], default=[], help="Enable brute-force for specific services")
+    parser.add_argument("--exploit-db-only", action="store_true", help="Only check for exploits in Exploit-DB")
+    parser.add_argument("--proxy", type=str, help="Use a proxy for requests")
+    parser.add_argument("--full-scan", action="store_true", help="Enable full scan mode (all features)")
+    parser.add_argument("-o", "--output", choices=["json", "txt"], help="Save output as JSON or TXT")
+
+    args = parser.parse_args()
+
+    # Eğer --all-ports seçildiyse, tüm portları tarar
+    ports_to_scan = list(range(1, 65536)) if args.all_ports else args.ports
+
+    asyncio.run(vulnscan(
+        args.target,
+        ports_to_scan,
+        args.timeout,
+        args.brute,
+        args.exploit_db_only,
+        args.output
+    ))
